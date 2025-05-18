@@ -178,8 +178,9 @@ resource "aws_security_group" "example" {
 ################################################################################
 module "ec2_instance" {
   for_each = var.ec2_instance
-
-  source  = ""
+  
+  source  = "terraform-aws-modules/ec2-instance/aws"
+  version  = "4.3.0"
 
   name                   = each.key
   ami                    = data.aws_ami.ubuntu.id
@@ -189,12 +190,13 @@ module "ec2_instance" {
   instance_type          = each.value.instance_type
   key_name               = aws_key_pair.my_key.key_name 
   monitoring             = true
-  vpc_security_group_ids = aws_security_group.example.id
-  subnet_id              = module.vpc["map"].private_subnets
+  vpc_security_group_ids = [aws_security_group.example.id]
+  subnet_id              = module.vpc["map"].private_subnets[0]
 
-  # cpu_core_count         = null
-  # cpu_threads_per_core   = null
-  # # block_duration_minutes = null
+
+  private_ip             = null
+  ipv6_address_count     = 0
+  ipv6_addresses         = []
 
   tags = {
     Terraform   = "true"

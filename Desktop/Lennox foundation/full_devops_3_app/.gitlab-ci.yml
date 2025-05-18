@@ -1,0 +1,62 @@
+image: docker:latest
+
+services:
+  - docker:dind
+
+variables:
+  DOCKER_DRIVER: overlay2
+  DOCKER_TLS_CERTDIR: ""
+  # These should be set as GitLab CI/CD variables
+  DOCKER_REPO: "${CI_REGISTRY_USER}/voting-app"
+  HELM_VALUES_FILE: "poc_app/voting-app-chart/values.yaml"
+  VERSION_FILE: "poc_app/version"
+  REGION_TEST: "us-east-1"
+  REGION_STAGE: "us-east-2"
+  REGION_PROD: "us-west-1"
+  GITLAB_USER_EMAIL: "your-email@example.com"
+  GITLAB_USER_NAME: "GitLab CI"
+  HELM_RELEASE_NAME: "voting-app"
+  HELM_NAMESPACE: "voting"
+
+stages:
+  - build
+  - push
+  - deploy
+
+before_script:
+  - apk add --no-cache curl jq yq git helm
+  - chmod +x update-version.sh set-region.sh
+
+build:
+  stage: build
+  script:
+    - echo "Building Docker Image..."
+    - cd poc_app/voting-app
+    - docker build -t $DOCKER_REPO:latest .
+  only:
+    - main
+
+push:
+  stage: push
+  script:
+    - echo "Logging into Docker Hub..."
+    - cd poc_app/voting-app
+    - source dockerhub-creds.env
+    - echo "$DOCKER_HUB_PASSWORD" | docker login -u "$DOCKER_HUB_USERNAME" --password-stdin
+    - docker tag $DOCKER_REPO:latest $DOCKER_REPO:${CI_COMMIT_SHORT_SHA}
+    - docker push $DOCKER_REPO:${CI_COMMIT_SHORT_SHA}
+    - docker push $DOCKER_REPO:latest
+  only:
+    - main
+
+deploy:
+  stage: deploy
+  script:
+    - export REGION=$(./set-region.sh)
+    - cd poc_app
+    - helm upgrade --install $HELM_RELEASE_NAME voting-app-chart/ --namespace $HELM_NAMESPACE --create-namespace --atomic --timeout 5m
+  only:
+    - main
+    - test
+    - stage
+    - prod 

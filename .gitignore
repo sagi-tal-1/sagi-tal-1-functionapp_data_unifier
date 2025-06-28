@@ -1,0 +1,20 @@
+# VSCode & Python
+.vscode/
+__pycache__/
+*.pyc
+
+# OS/System files
+.DS_Store
+*.log
+
+# Terraform
+.terraform/
+*.tfstate
+*.tfstate.backup
+
+# Node/Azure
+node_modules/
+.env
+
+# Others
+.idea/

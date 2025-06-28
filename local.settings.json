@@ -1,0 +1,12 @@
+{
+  "IsEncrypted": false,
+  "Values": {
+    "FUNCTIONS_WORKER_RUNTIME": "python",
+    "AzureWebJobsStorage": "UseDevelopmentStorage=true",
+    "SQL_CONNECTION_STRING": "your_sql_connection_string_here",
+    "COSMOS_CONNECTION_STRING": "your_cosmos_connection_string_here",
+    "TABLE_STORAGE_CONNECTION_STRING": "your_table_storage_connection_string_here",
+    "MONGODB_CONNECTION_STRING": "your_mongodb_connection_string_here",
+    "STORAGE_CONNECTION_STRING": "your_storage_connection_string_here"
+  }
+} 

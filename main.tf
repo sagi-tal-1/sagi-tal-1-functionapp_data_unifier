@@ -16,28 +16,28 @@ module "static_website" {
   tags                = each.value.tags
 }
 
-# # Deploy function app module
-# module "function_app" {
-#   source   = "./modules/function_app"
-#   for_each = var.environments
+# Deploy function app module
+module "function_app" {
+  source   = "./modules/function_app"
+  for_each = var.environments
 
-#   resource_group_name = azurerm_resource_group.main[each.key].name
-#   location            = azurerm_resource_group.main[each.key].location
-#   function_app_config = each.value.function_app
-#   database_config     = each.value.databases
-#   tags                = each.value.tags
-#   depends_on = [module.static_website, module.databases]
+  resource_group_name = azurerm_resource_group.main[each.key].name
+  location            = azurerm_resource_group.main[each.key].location
+  function_app_config = each.value.function_app
+  database_config     = each.value.databases
+  tags                = each.value.tags
+  depends_on = [module.static_website, module.databases]
 
-  
-# }
+ 
+}
 
-# # Deploy databases module
-# module "databases" {
-#   source   = "./modules/databases"
-#   for_each = var.environments
+# Deploy databases module
+module "databases" {
+  source   = "./modules/databases"
+  for_each = var.environments
 
-#   resource_group_name = azurerm_resource_group.main[each.key].name
-#   location            = azurerm_resource_group.main[each.key].location
-#   databases           = each.value.databases
-#   tags                = each.value.tags
-# }
+  resource_group_name = azurerm_resource_group.main[each.key].name
+  location            = azurerm_resource_group.main[each.key].location
+  databases           = each.value.databases
+  tags                = each.value.tags
+}
